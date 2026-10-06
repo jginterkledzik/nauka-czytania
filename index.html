@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Czytam!</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f3e9;
+    text-align: center;
+    margin: 0;
+    padding: 30px;
+}
+
+h1 {
+    font-size: 42px;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-size: 20px;
+    color: #555;
+}
+
+.card {
+    background: white;
+    max-width: 650px;
+    margin: 30px auto;
+    padding: 35px;
+    border-radius: 25px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+}
+
+.picture {
+    font-size: 100px;
+    margin: 10px;
+}
+
+.word {
+    font-size: 65px;
+    font-weight: bold;
+    letter-spacing: 12px;
+    margin: 25px 0;
+}
+
+.answers {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+button {
+    width: 100px;
+    height: 90px;
+    font-size: 42px;
+    font-weight: bold;
+    border: none;
+    border-radius: 18px;
+    background: #dcecff;
+    cursor: pointer;
+}
+
+button:hover {
+    transform: scale(1.08);
+}
+
+#message {
+    height: 55px;
+    margin-top: 25px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.score {
+    font-size: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📖 CZYTAM!</h1>
+<div class="subtitle">Wybierz brakującą literę</div>
+
+<div class="card">
+
+    <div id="picture" class="picture">🐱</div>
+
+    <div id="word" class="word">K _ T</div>
+
+    <div id="answers" class="answers"></div>
+
+    <div id="message"></div>
+
+</div>
+
+<div class="score">
+⭐ Zdobyte gwiazdki: <span id="score">0</span>
+</div>
+
+<script>
+
+const tasks = [
+    { word: "KOT", missing: 1, picture: "🐱", answers: ["O","A","E"] },
+    { word: "DOM", missing: 1, picture: "🏠", answers: ["O","A","U"] },
+    { word: "LAS", missing: 1, picture: "🌲", answers: ["A","O","E"] },
+    { word: "NOS", missing: 1, picture: "👃", answers: ["O","A","I"] },
+    { word: "OKO", missing: 1, picture: "👁️", answers: ["K","M","T"] },
+    { word: "BUT", missing: 1, picture: "👟", answers: ["U","O","A"] },
+    { word: "SER", missing: 1, picture: "🧀", answers: ["E","A","O"] },
+    { word: "RYBA", missing: 1, picture: "🐟", answers: ["Y","A","O"] },
+    { word: "LAMA", missing: 1, picture: "🦙", answers: ["A","O","U"] },
+    { word: "SOWA", missing: 1, picture: "🦉", answers: ["O","A","E"] }
+];
+
+let current = 0;
+let score = 0;
+
+function showTask() {
+
+    const task = tasks[current];
+
+    document.getElementById("picture").textContent = task.picture;
+
+    let letters = task.word.split("");
+    letters[task.missing] = "_";
+
+    document.getElementById("word").textContent = letters.join(" ");
+
+    document.getElementById("message").textContent = "";
+
+    const answers = document.getElementById("answers");
+    answers.innerHTML = "";
+
+    task.answers.forEach(letter => {
+
+        const button = document.createElement("button");
+        button.textContent = letter;
+
+        button.onclick = () => checkAnswer(letter);
+
+        answers.appendChild(button);
+
+    });
+}
+
+function checkAnswer(letter) {
+
+    const task = tasks[current];
+
+    if(letter === task.word[task.missing]) {
+
+        score++;
+
+        document.getElementById("score").textContent = score;
+        document.getElementById("message").textContent = "⭐ BRAWO! ⭐";
+
+        speak(task.word);
+
+        setTimeout(() => {
+
+            current++;
+
+            if(current >= tasks.length) {
+                current = 0;
+            }
+
+            showTask();
+
+        }, 1500);
+
+    } else {
+
+        document.getElementById("message").textContent = "Spróbuj jeszcze raz 🙂";
+
+    }
+}
+
+function speak(word) {
+
+    const speech = new SpeechSynthesisUtterance(word);
+    speech.lang = "pl-PL";
+    speech.rate = 0.7;
+
+    window.speechSynthesis.speak(speech);
+}
+
+showTask();
+
+</script>
+
+</body>
+</html>
